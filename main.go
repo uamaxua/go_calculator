@@ -2,11 +2,18 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"math/rand"
+	"go_calculator/handlers"
+	"log"
+	"net/http"
 )
 
 func main() {
-	fmt.Println("Random test:", rand.Intn(10))
-	fmt.Println("Abs:", math.Pi, "omg")
+	handleRequests()
+}
+
+func handleRequests() {
+	http.Handle("/calc", http.HandlerFunc(handlers.CalculateExpression))
+	port := 8080
+	log.Println("HTTP server is starting on port", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }
