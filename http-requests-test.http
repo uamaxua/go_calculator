@@ -1,0 +1,4 @@
+### GET caclculate expression
+GET http://localhost:8080/calc?expression=2%2B2
+
+###
