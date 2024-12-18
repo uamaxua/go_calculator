@@ -28,7 +28,7 @@ func TestGenerateTokens(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewParser(tt.tokens)
+			p := NewMathParser(tt.tokens)
 			result, resultError := p.Parse()
 			treeString := result.String()
 			if tt.expectError {

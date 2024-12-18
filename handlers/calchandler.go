@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"go_calculator/interpreter"
 	"go_calculator/lexer"
+	"go_calculator/parser"
 	"log"
 	"net/http"
 )
@@ -13,15 +15,28 @@ func CalculateExpression(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Calculating expression: %s", expression)
-	tokens, lexer_error := lexer.GenerateTokens(expression)
-	if lexer_error != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	tokens, lexerError := lexer.GenerateTokens(expression)
+	if lexerError != nil {
+		http.Error(w, fmt.Sprintf("Not able to tokenize: %v", lexerError), http.StatusInternalServerError)
 	}
 	if tokens != nil {
-		fmt.Printf("Tokens: %s\n", tokens)
+		log.Printf("Tokens: %s\n", tokens)
 	}
+	mathParser := parser.NewMathParser(tokens)
+	node, parseError := mathParser.Parse()
+	if parseError != nil {
+		http.Error(w, fmt.Sprintf("Not able to parse: %v", parseError), http.StatusInternalServerError)
+	}
+	if node != nil {
+		log.Printf("Flat tree: %s\n", node.String())
+	}
+	result, interpreterError := interpreter.CalculateResult(node)
+	if interpreterError != nil {
+		http.Error(w, fmt.Sprintf("Not able to caclulate result: %v", interpreterError), http.StatusInternalServerError)
+	}
+
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(fmt.Sprintf("Provided expression: %s", expression)))
+	_, err := w.Write([]byte(fmt.Sprintf("Resul: %.2f", result)))
 	if err != nil {
 		log.Printf("Failed to write response: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

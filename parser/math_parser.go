@@ -5,19 +5,19 @@ import (
 	"go_calculator/lexer"
 )
 
-type Parser struct {
+type MathParser struct {
 	tokens       []lexer.Token
 	currentToken *lexer.Token
 	position     int
 }
 
-func NewParser(tokens []lexer.Token) *Parser {
-	parser := &Parser{tokens: tokens, position: -1}
+func NewMathParser(tokens []lexer.Token) *MathParser {
+	parser := &MathParser{tokens: tokens, position: -1}
 	parser.nextToken()
 	return parser
 }
 
-func (p *Parser) nextToken() {
+func (p *MathParser) nextToken() {
 	p.position++
 	if p.position < len(p.tokens) {
 		p.currentToken = &p.tokens[p.position]
@@ -26,11 +26,11 @@ func (p *Parser) nextToken() {
 	}
 }
 
-func (p *Parser) raiseSyntaxError() error {
+func (p *MathParser) raiseSyntaxError() error {
 	return errors.New("invalid syntax")
 }
 
-func (p *Parser) Parse() (Node, error) {
+func (p *MathParser) Parse() (Node, error) {
 	if p.currentToken == nil {
 		return nil, nil
 	}
@@ -44,7 +44,7 @@ func (p *Parser) Parse() (Node, error) {
 	return result, nil
 }
 
-func (p *Parser) parseExpression() (Node, error) {
+func (p *MathParser) parseExpression() (Node, error) {
 	result, err := p.parseTerm()
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (p *Parser) parseExpression() (Node, error) {
 	return result, nil
 }
 
-func (p *Parser) parseTerm() (Node, error) {
+func (p *MathParser) parseTerm() (Node, error) {
 	result, err := p.parseFactor()
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (p *Parser) parseTerm() (Node, error) {
 	return result, nil
 }
 
-func (p *Parser) parseFactor() (Node, error) {
+func (p *MathParser) parseFactor() (Node, error) {
 	token := p.currentToken
 	if token.Type == lexer.LeftBracket {
 		p.nextToken()
