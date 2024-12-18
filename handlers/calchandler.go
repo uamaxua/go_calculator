@@ -11,43 +11,43 @@ import (
 
 func CalculateExpression(w http.ResponseWriter, r *http.Request) {
 	expression := r.URL.Query().Get("expression")
-	if isNotValidRequestParam(w, expression) {
+	if expression == "" {
+		log.Println("No expression provided")
+		http.Error(w, "Bad Request: Missing expression parameter", http.StatusBadRequest)
 		return
 	}
+
 	log.Printf("Calculating expression: %s", expression)
+
 	tokens, lexerError := lexer.GenerateTokens(expression)
-	if lexerError != nil {
-		http.Error(w, fmt.Sprintf("Not able to tokenize: %v", lexerError), http.StatusInternalServerError)
+	if handleError(w, lexerError, "Not able to tokenize", http.StatusInternalServerError) {
+		return
 	}
-	if tokens != nil {
-		log.Printf("Tokens: %s\n", tokens)
-	}
+	log.Printf("Tokens: %s\n", tokens)
+
 	mathParser := parser.NewMathParser(tokens)
 	node, parseError := mathParser.Parse()
-	if parseError != nil {
-		http.Error(w, fmt.Sprintf("Not able to parse: %v", parseError), http.StatusInternalServerError)
+	if handleError(w, parseError, "Not able to parse", http.StatusInternalServerError) {
+		return
 	}
-	if node != nil {
-		log.Printf("Flat tree: %s\n", node.String())
-	}
+	log.Printf("Flat tree: %s\n", node.String())
+
 	result, interpreterError := interpreter.CalculateResult(node)
-	if interpreterError != nil {
-		http.Error(w, fmt.Sprintf("Not able to caclulate result: %v", interpreterError), http.StatusInternalServerError)
+	if handleError(w, interpreterError, "Not able to calculate result", http.StatusInternalServerError) {
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(fmt.Sprintf("Resul: %.2f", result)))
-	if err != nil {
-		log.Printf("Failed to write response: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	_, writeError := w.Write([]byte(fmt.Sprintf("Result: %.2f", result)))
+	if handleError(w, writeError, "Failed to write response", http.StatusInternalServerError) {
 		return
 	}
 }
 
-func isNotValidRequestParam(w http.ResponseWriter, e string) bool {
-	if e == "" {
-		log.Println("No expression provided")
-		http.Error(w, "Bad Request: Missing expression parameter", http.StatusBadRequest)
+func handleError(w http.ResponseWriter, err error, message string, statusCode int) bool {
+	if err != nil {
+		log.Printf("%s: %v", message, err)
+		http.Error(w, fmt.Sprintf("%s: %v", message, err), statusCode)
 		return true
 	}
 	return false
