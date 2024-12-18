@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"go_calculator/lexer"
 	"log"
 	"net/http"
 )
@@ -12,6 +13,13 @@ func CalculateExpression(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Calculating expression: %s", expression)
+	tokens, lexer_error := lexer.GenerateTokens(expression)
+	if lexer_error != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if tokens != nil {
+		fmt.Printf("Tokens: %s\n", tokens)
+	}
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte(fmt.Sprintf("Provided expression: %s", expression)))
 	if err != nil {

@@ -8,12 +8,12 @@ import (
 )
 
 var operationsMap = map[rune]TokenType{
-	'+': PLUS,
-	'-': MINUS,
-	'*': MULTIPLY,
-	'/': DIVIDE,
-	'(': BRACKET_LEFT,
-	')': BRACKET_RIGHT,
+	'+': Plus,
+	'-': Minus,
+	'*': Multiply,
+	'/': Divide,
+	'(': LeftBracket,
+	')': RightBracket,
 }
 
 func GenerateTokens(expression string) ([]Token, error) {
@@ -41,7 +41,7 @@ func GenerateTokens(expression string) ([]Token, error) {
 			if err != nil {
 				return nil, err
 			}
-			tokens = append(tokens, Token{Type: NUMBER, Value: num})
+			tokens = append(tokens, Token{Type: Number, Value: num})
 			containsDecimalPoint = false
 			i = j - 1
 		} else if !unicode.IsSpace(character) {

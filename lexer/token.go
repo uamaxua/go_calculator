@@ -5,16 +5,16 @@ import (
 	"math"
 )
 
-type TokenType int
+type TokenType string
 
 const (
-	NUMBER TokenType = iota
-	PLUS
-	MINUS
-	MULTIPLY
-	DIVIDE
-	BRACKET_LEFT
-	BRACKET_RIGHT
+	Number       TokenType = "NUMBER"
+	Plus         TokenType = "PLUS"
+	Minus        TokenType = "MINUS"
+	Multiply     TokenType = "MULTIPLY"
+	Divide       TokenType = "DIVIDE"
+	LeftBracket  TokenType = "LEFT_BRACKET"
+	RightBracket TokenType = "RIGHT_BRACKET"
 )
 
 type Token struct {
@@ -31,5 +31,5 @@ func NewTokenWithoutValue(tokenType TokenType) Token {
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("Token {type: %d, value: %f}", t.Type, t.Value)
+	return fmt.Sprintf("Token {type: %s, value: %f}", t.Type, t.Value)
 }
