@@ -16,6 +16,7 @@ It provides two modes of operation:
 
 1. **Go**: Install from [https://go.dev/dl/](https://go.dev/dl/).
 2. **Docker**: Install from [https://www.docker.com/get-started/](https://www.docker.com/get-started/).
+3. **NATS-CLI**: Install from [https://github.com/nats-io/natscli/](https://github.com/nats-io/natscli/).
 
 ---
 
@@ -40,9 +41,21 @@ It provides two modes of operation:
     ```bash
     go run main.go
 
-5. Test HTTP server:
+5. Test HTTP request:
    #### - Send a GET request:
         curl "http://localhost:8080/calc?expression=(2%2B68)*10"
 
    #### - Response:
         Result: 700.00
+6. Test NATS request:
+   #### - Subscribe to reply subject (do not close terminal):
+        nats sub calc_result
+
+   #### - Open terminal in another window and send request:
+    ```bash
+      nats pub calc '{\"expression\": \"2+2\"}' --reply calc_result
+   
+  #### - Open terminal in another window and send request:
+   ```bash
+   Received on "calc_result"
+   {"result":4}
