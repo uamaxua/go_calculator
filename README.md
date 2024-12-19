@@ -55,7 +55,7 @@ It provides two modes of operation:
     ```bash
       nats pub calc '{\"expression\": \"2+2\"}' --reply calc_result
    
-  #### - Open terminal in another window and send request:
+  #### - Open terminal with subscription and check response:
    ```bash
    Received on "calc_result"
    {"result":4}
